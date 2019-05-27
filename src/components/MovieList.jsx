@@ -1,15 +1,31 @@
 import React, { Component } from "react";
-import * as moviesAPI from "../services/fakeMovieService";
+import { getMovies } from "../services/fakeMovieService";
+import { getGenres } from "../services/fakeGenreService";
+
 import Movie from "./Movie";
+import Paginator from "./Paginator";
+import ListGroup from "./ListGroup";
 import "font-awesome/css/font-awesome.css";
 
 class MovieList extends Component {
   state = {
-    movies: moviesAPI.getMovies(),
-    movieCount: moviesAPI.getMovies().length,
-    movieLabel: moviesAPI.getMovies().length > 1 ? "movies" : "movie",
-    page: 1
+    movies: [],
+    movieCount: 0,
+    pageNum: 1,
+    pageSize: 4,
+    activeGenre: "",
+    genres: []
   };
+  //
+  componentDidMount() {
+    const genres = [{ name: "All Genres" }, ...getGenres()];
+
+    this.setState({
+      movies: getMovies(),
+      movieCount: getMovies().length,
+      genres: genres
+    });
+  }
 
   handleDelete = movieID => {
     var newMovies = [...this.state.movies].filter(m => m._id !== movieID);
@@ -24,73 +40,81 @@ class MovieList extends Component {
     this.setState({ movies: newMovies });
   };
 
-  handlePage = index => {
-    const page = this.state.page;
-    let newPage = index;
-    this.setState({ page: newPage });
+  handlePageChange = index => {
+    let newIndex = index;
+    let maxPageNum = Math.ceil(this.state.movieCount / this.state.pageSize);
+
+    if (index < 1) newIndex = 1;
+    if (index > maxPageNum) newIndex = maxPageNum;
+    this.setState({ pageNum: newIndex });
+  };
+
+  handleGenreSelect = genre => {
+    console.log("Genre Clicked is" + genre);
+    this.setState({ pageNum: 1, activeGenre: genre });
   };
 
   render() {
     if (this.state.movieCount === 0) return "There are no movies";
 
-    return (
-      <div>
-        <p>
-          Showing {this.state.movieCount} {this.state.movieLabel} in the
-          database.
-        </p>
+    const filteredByGenre =
+      this.state.activeGenre && this.state.activeGenre._id
+        ? this.state.movies.filter(
+            g => g.genre._id === this.state.activeGenre._id
+          )
+        : this.state.movies;
 
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Genre</th>
-              <th scope="col">Stock</th>
-              <th scope="col">Rate</th>
-              <th scope="col" />
-              <th scope="col" />
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.movies.map((movie, index) => (
-              <Movie
-                key={movie._id}
-                movie={movie}
-                pagenum={this.state.page}
-                index={index}
-                onDelete={this.handleDelete}
-                onLike={this.handleLike}
-              />
-            ))}
-          </tbody>
-        </table>
-        <nav aria-label="Page navigation example">
-          <ul className="pagination">
-            <li className="page-item">
-              <a className="page-link">Previous</a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" onClick={() => this.handlePage(1)}>
-                1
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" onClick={() => this.handlePage(2)}>
-                2
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" onClick={() => this.handlePage(3)}>
-                3
-              </a>
-            </li>
-            <li className="page-item">
-              <a className="page-link" href="#">
-                Next
-              </a>
-            </li>
-          </ul>
-        </nav>
+    const movieLabel = filteredByGenre.length > 1 ? "movies" : "movie";
+
+    console.log(
+      "Filterd Movies = " + filteredByGenre.map(movie => movie.title)
+    );
+
+    return (
+      <div className="row">
+        <div className="col-3">
+          <ListGroup
+            onItemSelect={this.handleGenreSelect}
+            activeItem={this.state.activeGenre}
+            items={this.state.genres}
+          />
+        </div>
+        <div className="col">
+          {" "}
+          <p>
+            Showing {filteredByGenre.length} {movieLabel} in the database.
+          </p>
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Genre</th>
+                <th scope="col">Stock</th>
+                <th scope="col">Rate</th>
+                <th scope="col" />
+                <th scope="col" />
+              </tr>
+            </thead>
+            <tbody>
+              {filteredByGenre.map((movie, index) => (
+                <Movie
+                  key={movie._id}
+                  movie={movie}
+                  pageNum={this.state.pageNum}
+                  index={index}
+                  onDelete={this.handleDelete}
+                  onLike={this.handleLike}
+                />
+              ))}
+            </tbody>
+          </table>
+          <Paginator
+            movieCount={filteredByGenre.length}
+            pageSize={this.state.pageSize}
+            onPageChange={this.handlePageChange}
+            pageNum={this.state.pageNum}
+          />
+        </div>
       </div>
     );
   }

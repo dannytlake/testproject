@@ -3,11 +3,11 @@ import "font-awesome/css/font-awesome.css";
 import Like from "./Like";
 
 class Movie extends Component {
-  state = { movie: this.props.movie };
+  //state = { movie: this.props.movie };
 
   render() {
-    let minx = (this.props.pagenum - 1) * 4;
-    let maxx = this.props.pagenum * 4;
+    let minx = (this.props.pageNum - 1) * 4;
+    let maxx = this.props.pageNum * 4;
 
     // console.log("range =" + minx + " to " + maxx);
     //if (parseInt(minx) <= parseInt(this.props.index) <= parseInt(maxx)) {
