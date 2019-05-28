@@ -18,6 +18,7 @@ const movies = [
     dailyRentalRate: 2.5,
     liked: false
   },
+
   {
     _id: "5b21ca3eeb7f6fbccd471817",
     title: "Get Out",

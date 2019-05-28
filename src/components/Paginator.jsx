@@ -9,7 +9,7 @@ class Paginator extends Component {
 
     let numPages = Math.ceil(this.props.movieCount / this.props.pageSize);
 
-    if (numPages === 1) return null;
+    if (numPages <= 1) return null;
     let i = 1;
     while (i < numPages + 1) {
       pageArray.push(i);

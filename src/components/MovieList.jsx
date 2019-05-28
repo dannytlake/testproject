@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
 
-import Movie from "./Movie";
+import MovieTable from "./MovieTable";
 import Paginator from "./Paginator";
 import ListGroup from "./ListGroup";
 import "font-awesome/css/font-awesome.css";
+import _ from "lodash";
 
 class MovieList extends Component {
   state = {
@@ -14,11 +15,13 @@ class MovieList extends Component {
     pageNum: 1,
     pageSize: 4,
     activeGenre: "",
-    genres: []
+    genres: [],
+    sortColumn: "title",
+    sortOrder: "asc"
   };
   //
   componentDidMount() {
-    const genres = [{ name: "All Genres" }, ...getGenres()];
+    const genres = [{ _id: "all", name: "All Genres" }, ...getGenres()];
 
     this.setState({
       movies: getMovies(),
@@ -50,69 +53,70 @@ class MovieList extends Component {
   };
 
   handleGenreSelect = genre => {
-    console.log("Genre Clicked is" + genre);
+    //    console.log("Genre Clicked is" + genre);
     this.setState({ pageNum: 1, activeGenre: genre });
   };
 
+  handleSort = sortColumn => {
+    if (
+      this.state.sortColumn === sortColumn &&
+      this.state.sortOrder === "asc"
+    ) {
+      this.setState({ sortColumn: sortColumn, sortOrder: "desc" });
+    } else {
+      this.setState({ sortColumn: sortColumn, sortOrder: "asc" });
+    }
+  };
+
   render() {
-    if (this.state.movieCount === 0) return "There are no movies";
+    const {
+      movieCount,
+      activeGenre,
+      movies,
+      genres,
+      pageNum,
+      pageSize,
+      sortColumn,
+      sortOrder
+    } = this.state;
 
-    const filteredByGenre =
-      this.state.activeGenre && this.state.activeGenre._id
-        ? this.state.movies.filter(
-            g => g.genre._id === this.state.activeGenre._id
-          )
-        : this.state.movies;
+    if (movieCount === 0) return "There are no movies";
 
-    const movieLabel = filteredByGenre.length > 1 ? "movies" : "movie";
+    let filteredByGenre =
+      activeGenre && activeGenre._id !== "all"
+        ? movies.filter(g => g.genre._id === activeGenre._id)
+        : movies;
 
-    console.log(
-      "Filterd Movies = " + filteredByGenre.map(movie => movie.title)
-    );
+    const sortedmovies = _.orderBy(filteredByGenre, [sortColumn], [sortOrder]);
+
+    const movieLabel = sortedmovies.length > 1 ? "movies" : "movie";
 
     return (
       <div className="row">
         <div className="col-3">
           <ListGroup
             onItemSelect={this.handleGenreSelect}
-            activeItem={this.state.activeGenre}
-            items={this.state.genres}
+            activeItem={activeGenre}
+            items={genres}
           />
         </div>
         <div className="col">
           {" "}
           <p>
-            Showing {filteredByGenre.length} {movieLabel} in the database.
+            Showing {sortedmovies.length} {movieLabel} in the database.
           </p>
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Genre</th>
-                <th scope="col">Stock</th>
-                <th scope="col">Rate</th>
-                <th scope="col" />
-                <th scope="col" />
-              </tr>
-            </thead>
-            <tbody>
-              {filteredByGenre.map((movie, index) => (
-                <Movie
-                  key={movie._id}
-                  movie={movie}
-                  pageNum={this.state.pageNum}
-                  index={index}
-                  onDelete={this.handleDelete}
-                  onLike={this.handleLike}
-                />
-              ))}
-            </tbody>
-          </table>
+          <MovieTable
+            filteredByGenre={sortedmovies}
+            pageNum={pageNum}
+            onDelete={this.handleDelete}
+            onLike={this.handleLike}
+            onSort={this.handleSort}
+          />
           <Paginator
-            movieCount={filteredByGenre.length}
-            pageSize={this.state.pageSize}
+            movieCount={sortedmovies.length}
+            pageSize={pageSize}
             onPageChange={this.handlePageChange}
-            pageNum={this.state.pageNum}
+            pageNum={pageNum}
           />
         </div>
       </div>
