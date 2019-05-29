@@ -1,43 +1,48 @@
 import React, { Component } from "react";
 import Movie from "./Movie";
+import TableHeader from "./TableHeader";
 
 class MovieTable extends Component {
+  columns = [
+    { path: "title", label: "Title" },
+    { path: "genre.name", label: "Genre" },
+    { path: "numberInStock", label: "Stock" },
+    { path: "dailyRentalRate", label: "Rate" },
+    {}, //like column
+    {} //delete column
+  ];
   raiseSort = newSortColumn => {
-    let newSortOrder = "asc";
+    const { sortColumn, sortOrder } = this.props;
 
-    if (
-      this.props.sortColumn === newSortColumn &&
-      this.props.sortOrder === "asc"
-    ) {
-      newSortOrder = "desc";
+    let newSort;
+
+    if (sortColumn === newSortColumn && sortOrder === "asc") {
+      newSort = "desc";
+    } else {
+      newSort = "asc";
     }
 
-    this.props.onSort(newSortColumn, newSortOrder);
+    this.props.onSort(newSortColumn, newSort, onSort);
   };
 
   render() {
-    const { filteredByGenre, pageNum, onDelete, onLike } = this.props;
+    const {
+      filteredByGenre,
+      pageNum,
+      onDelete,
+      onLike,
+      sortColumn,
+      sortOrder
+    } = this.props;
 
     return (
       <table className="table">
-        <thead>
-          <tr>
-            <th onClick={() => this.raiseSort("title")} scope="col">
-              Title
-            </th>
-            <th onClick={() => this.raiseSort("genre.name")} scope="col">
-              Genre
-            </th>
-            <th onClick={() => this.raiseSort("numberInStock")} scope="col">
-              Stock
-            </th>
-            <th onClick={() => this.raiseSort("dailyRentalRate")} scope="col">
-              Rate
-            </th>
-            <th scope="col" />
-            <th scope="col" />
-          </tr>
-        </thead>
+        <TableHeader
+          columns={this.columns}
+          onSort={onSort}
+          sortColumn={sortColumn}
+          sortOrder={sortOrder}
+        />
         <tbody>
           {filteredByGenre.map((movie, index) => (
             <Movie
