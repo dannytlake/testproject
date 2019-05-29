@@ -57,15 +57,8 @@ class MovieList extends Component {
     this.setState({ pageNum: 1, activeGenre: genre });
   };
 
-  handleSort = sortColumn => {
-    if (
-      this.state.sortColumn === sortColumn &&
-      this.state.sortOrder === "asc"
-    ) {
-      this.setState({ sortColumn: sortColumn, sortOrder: "desc" });
-    } else {
-      this.setState({ sortColumn: sortColumn, sortOrder: "asc" });
-    }
+  handleSort = (sortColumn, sortOrder) => {
+    this.setState({ sortColumn, sortOrder });
   };
 
   render() {
@@ -111,6 +104,8 @@ class MovieList extends Component {
             onDelete={this.handleDelete}
             onLike={this.handleLike}
             onSort={this.handleSort}
+            sortColumn={sortColumn}
+            sortOrder={sortOrder}
           />
           <Paginator
             movieCount={sortedmovies.length}

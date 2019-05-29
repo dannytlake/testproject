@@ -6,7 +6,7 @@ In the project directory, you can run:
 
 ###
 
-hihihi
+hihihi from osx
 
 ### `npm start`
 
