@@ -6,10 +6,30 @@ import TableHeader from "./TableHeader";
 import TableBody from "./TableBody";
 import Paginator from "./Paginator";
 import ListGroup from "./ListGroup";
+import Like from "./Like";
 import "font-awesome/css/font-awesome.css";
 import _ from "lodash";
 
 class MovieList extends Component {
+  columns = [
+    { path: "title", label: "Title", _id: "1" },
+    { path: "genre.name", label: "Genre", _id: "2" },
+    { path: "numberInStock", label: "Stock", _id: "3" },
+    { path: "dailyRentalRate", label: "Rate", _id: "4" },
+    {
+      _id: "5",
+      content: movie => <Like liked={movie.liked} onClick={() => this.props.onLike(movie)} />
+    }, //like column
+    {
+      _id: "6",
+      content: movie => (
+        <button className="btn btn-danger btn-sm m-2" onClick={() => this.props.onDelete(movie)}>
+          Delete
+        </button>
+      )
+    } //delete column
+  ];
+
   state = {
     movies: [],
     movieCount: 0,
@@ -31,8 +51,8 @@ class MovieList extends Component {
     });
   }
 
-  handleDelete = movieID => {
-    var newMovies = [...this.state.movies].filter(m => m._id !== movieID);
+  handleDelete = movie => {
+    var newMovies = [...this.state.movies].filter(m => m._id !== movie._id);
     this.setState({ movies: newMovies, movieCount: this.state.movieCount - 1 });
   };
 
@@ -73,15 +93,6 @@ class MovieList extends Component {
       sortOrder
     } = this.state;
 
-    const columns = [
-      { path: "title", label: "Title", _id: "1" },
-      { path: "genre.name", label: "Genre", _id: "2" },
-      { path: "numberInStock", label: "Stock", _id: "3" },
-      { path: "dailyRentalRate", label: "Rate", _id: "4" },
-      { _id: "5" }, //like column
-      { _id: "6" } //delete column
-    ];
-
     if (movieCount === 0) return "There are no movies";
 
     let filteredByGenre =
@@ -103,23 +114,22 @@ class MovieList extends Component {
           />
         </div>
         <div className="col">
-          {" "}
           <p>
             Showing {sortedmovies.length} {movieLabel} in the database.
           </p>
           <table className="table">
             <TableHeader
-              columns={columns}
+              columns={this.columns}
               onSort={this.handleSort}
               sortColumn={sortColumn}
               sortOrder={sortOrder}
             />
-
             <TableBody
               filteredByGenre={sortedmovies}
               pageNum={pageNum}
               onDelete={this.handleDelete}
               onLike={this.handleLike}
+              columns={this.columns}
             />
           </table>
           <Paginator

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "font-awesome/css/font-awesome.css";
-import Like from "./Like";
 
 class Movie extends Component {
   //state = { movie: this.props.movie };
