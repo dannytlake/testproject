@@ -1,13 +1,7 @@
 import React from "react";
 
 const ListGroup = props => {
-  const {
-    items,
-    valueProperty,
-    textProperty,
-    activeItem,
-    onItemSelect
-  } = props;
+  const { items, valueProperty, textProperty, activeItem, onItemSelect } = props;
 
   return (
     <ul className="list-group">
@@ -15,7 +9,9 @@ const ListGroup = props => {
         <li
           key={item[valueProperty]}
           className={
-            item === activeItem ? "list-group-item active " : "list-group-item"
+            item[valueProperty] === activeItem[valueProperty]
+              ? "list-group-item active "
+              : "list-group-item"
           }
           style={{ cursor: "pointer" }}
           onClick={() => onItemSelect(item)}
@@ -33,20 +29,3 @@ ListGroup.defaultProps = {
 };
 
 export default ListGroup;
-
-/*
-
-
-      <a
-          href="#"
-          className={
-            "All" === this.props.activeGenre
-              ? strClassActive
-              : strClassNotActive
-          }
-          onClick={() => this.props.onClick("All")}
-        >
-          All Genres
-        </a>
-
-*/

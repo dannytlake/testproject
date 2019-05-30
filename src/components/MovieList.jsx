@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
 
-import MovieTable from "./MovieTable";
+import TableHeader from "./TableHeader";
+import TableBody from "./TableBody";
 import Paginator from "./Paginator";
 import ListGroup from "./ListGroup";
 import "font-awesome/css/font-awesome.css";
@@ -14,7 +15,7 @@ class MovieList extends Component {
     movieCount: 0,
     pageNum: 1,
     pageSize: 4,
-    activeGenre: "",
+    activeGenre: { _id: "all", name: "All Genres" },
     genres: [],
     sortColumn: "title",
     sortOrder: "asc"
@@ -53,7 +54,6 @@ class MovieList extends Component {
   };
 
   handleGenreSelect = genre => {
-    //    console.log("Genre Clicked is" + genre);
     this.setState({ pageNum: 1, activeGenre: genre });
   };
 
@@ -73,6 +73,15 @@ class MovieList extends Component {
       sortOrder
     } = this.state;
 
+    const columns = [
+      { path: "title", label: "Title", _id: "1" },
+      { path: "genre.name", label: "Genre", _id: "2" },
+      { path: "numberInStock", label: "Stock", _id: "3" },
+      { path: "dailyRentalRate", label: "Rate", _id: "4" },
+      { _id: "5" }, //like column
+      { _id: "6" } //delete column
+    ];
+
     if (movieCount === 0) return "There are no movies";
 
     let filteredByGenre =
@@ -86,7 +95,7 @@ class MovieList extends Component {
 
     return (
       <div className="row">
-        <div className="col-3">
+        <div className="col-2">
           <ListGroup
             onItemSelect={this.handleGenreSelect}
             activeItem={activeGenre}
@@ -98,15 +107,21 @@ class MovieList extends Component {
           <p>
             Showing {sortedmovies.length} {movieLabel} in the database.
           </p>
-          <MovieTable
-            filteredByGenre={sortedmovies}
-            pageNum={pageNum}
-            onDelete={this.handleDelete}
-            onLike={this.handleLike}
-            onSort={this.handleSort}
-            sortColumn={sortColumn}
-            sortOrder={sortOrder}
-          />
+          <table className="table">
+            <TableHeader
+              columns={columns}
+              onSort={this.handleSort}
+              sortColumn={sortColumn}
+              sortOrder={sortOrder}
+            />
+
+            <TableBody
+              filteredByGenre={sortedmovies}
+              pageNum={pageNum}
+              onDelete={this.handleDelete}
+              onLike={this.handleLike}
+            />
+          </table>
           <Paginator
             movieCount={sortedmovies.length}
             pageSize={pageSize}
