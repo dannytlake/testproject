@@ -7,7 +7,7 @@ class Paginator extends Component {
   render() {
     const pageArray = [];
 
-    let numPages = Math.ceil(this.props.movieCount / this.props.pageSize);
+    let numPages = Math.ceil(this.props.itemCount / this.props.pageSize);
 
     if (numPages <= 1) return null;
     let i = 1;
@@ -68,7 +68,7 @@ class Paginator extends Component {
 }
 
 Paginator.propTypes = {
-  movieCount: PropTypes.number.isRequired,
+  itemCount: PropTypes.number.isRequired,
   pageSize: PropTypes.number.isRequired,
   pageNum: PropTypes.number.isRequired,
   onPageChange: PropTypes.func.isRequired
