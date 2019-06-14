@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+
 import { getMovies } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
 
@@ -12,7 +14,12 @@ import { paginate } from "../utils/paginate";
 
 class MovieList extends Component {
   columns = [
-    { path: "title", label: "Title", _id: "1" },
+    {
+      path: "title",
+      label: "Title",
+      _id: "1",
+      content: movie => <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
+    },
     { path: "genre.name", label: "Genre", _id: "2" },
     { path: "numberInStock", label: "Stock", _id: "3" },
     { path: "dailyRentalRate", label: "Rate", _id: "4" },
@@ -128,7 +135,7 @@ class MovieList extends Component {
     const { totalCount, movies } = this.getPaginatedData();
 
     return (
-      <main role="main" class="flex-shrink-0">
+      <main role="main" className="flex-shrink-0">
         <div className="row">
           <div className="col-2">
             <ListGroup

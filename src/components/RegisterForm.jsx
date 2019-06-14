@@ -1,0 +1,53 @@
+import React from "react";
+import Joi from "joi-browser";
+import Form from "./common/Form";
+
+class RegisterForm extends Form {
+  state = {
+    data: {
+      userName: "",
+      password: "",
+      name: ""
+    },
+    errors: {}
+  };
+
+  schema = {
+    userName: Joi.string()
+      .required()
+      .email()
+      .label("Username"),
+    password: Joi.string()
+      .required()
+      .min(5)
+      .label("Password"),
+    name: Joi.string()
+      .required()
+      .label("Name")
+  };
+
+  doSubmit = () => {
+    console.log("submitted");
+    console.log(this.state.data);
+  };
+
+  // componentDidMount() {
+  //  this.userName.current.focus();
+  //}
+
+  render() {
+    return (
+      <div>
+        <h1>Register</h1>
+        <form onSubmit={this.handleSubmit}>
+          {this.renderInput("userName", "Username")}
+          {this.renderInput("password", "Password", "password")}
+          {this.renderInput("name", "Name")}
+          {this.renderButton("Register")}
+        </form>
+      </div>
+    );
+  }
+}
+
+export default RegisterForm;
