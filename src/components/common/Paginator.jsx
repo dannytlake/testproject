@@ -16,12 +16,7 @@ class Paginator extends Component {
       i++;
     }
 
-    //console.log(pageArray);
-
     return (
-      //this.props.movieCount
-      //this.props.pagesize
-
       <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li className="page-item">

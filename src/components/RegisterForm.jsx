@@ -1,11 +1,12 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/Form";
+import * as userService from "../services/userService";
 
 class RegisterForm extends Form {
   state = {
     data: {
-      userName: "",
+      email: "",
       password: "",
       name: ""
     },
@@ -13,10 +14,10 @@ class RegisterForm extends Form {
   };
 
   schema = {
-    userName: Joi.string()
+    email: Joi.string()
       .required()
       .email()
-      .label("Username"),
+      .label("Email"),
     password: Joi.string()
       .required()
       .min(5)
@@ -26,9 +27,19 @@ class RegisterForm extends Form {
       .label("Name")
   };
 
-  doSubmit = () => {
-    console.log("submitted");
-    console.log(this.state.data);
+  doSubmit = async () => {
+    try {
+      const response = await userService.registerUser(this.state.data);
+      localStorage.setItem("token", response.headers["x-auth-token"]);
+      //this.props.history.push("/");
+      window.location = "/"; //this triggers full refresh as opposed to using the history prop
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.email = ex.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   // componentDidMount() {
@@ -40,9 +51,9 @@ class RegisterForm extends Form {
       <div>
         <h1>Register</h1>
         <form onSubmit={this.handleSubmit}>
-          {this.renderInput("userName", "Username")}
-          {this.renderInput("password", "Password", "password")}
+          {this.renderInput("email", "Email")}
           {this.renderInput("name", "Name")}
+          {this.renderInput("password", "Password", "password")}
           {this.renderButton("Register")}
         </form>
       </div>

@@ -4,7 +4,6 @@ const Like = props => {
   let strclass = "fa fa-heart";
 
   if (props.liked === false) {
-    //  console.log(props.movie.title);
     strclass += "-o";
   }
   return (

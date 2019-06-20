@@ -1,6 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/Form";
+import * as authService from "../services/authService";
 
 class LoginForm extends Form {
   state = {
@@ -20,14 +21,23 @@ class LoginForm extends Form {
       .label("Password")
   };
 
-  doSubmit = () => {
-    console.log("submitted");
-    console.log(this.state.data);
-  };
+  doSubmit = async () => {
+    try {
+      await authService.login(this.state.data);
+      // this.props.history.push("/");
+      window.location = "/"; //this triggers full refresh as opposed to using the history prop
+    } catch (ex) {
+      console.log(ex.response);
+      console.log(ex.response.status);
+      console.log(ex.response.data);
 
-  // componentDidMount() {
-  //  this.userName.current.focus();
-  //}
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.userName = ex.response.data;
+        this.setState({ errors });
+      }
+    }
+  };
 
   render() {
     return (

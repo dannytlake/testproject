@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Select from "./Select";
 import Input from "./Input";
 import Joi from "joi-browser";
 
@@ -8,6 +9,7 @@ class Form extends Component {
   validate = () => {
     const options = { abortEarly: false };
     const result = Joi.validate(this.state.data, this.schema, options);
+
     if (!result.error) return null;
 
     const errors = {};
@@ -38,6 +40,7 @@ class Form extends Component {
 
   handleChange = ({ currentTarget: input }) => {
     const errors = { ...this.state.errors };
+
     const errorMessage = this.validateProperty(input);
 
     if (errorMessage) errors[input.name] = errorMessage;
@@ -67,6 +70,20 @@ class Form extends Component {
         onChange={this.handleChange}
         label={label}
         error={errors[name]}
+      />
+    );
+  }
+
+  renderSelect(fieldname, label, options) {
+    const { data, errors } = this.state;
+    return (
+      <Select
+        fieldname={fieldname}
+        value={data[fieldname]}
+        label={label}
+        options={options}
+        onChange={this.handleChange}
+        error={errors[fieldname]}
       />
     );
   }
