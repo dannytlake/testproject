@@ -1,7 +1,8 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/Form";
-import * as authService from "../services/authService";
+import auth from "../services/authService";
+import { Redirect } from "react-router-dom";
 
 class LoginForm extends Form {
   state = {
@@ -23,9 +24,11 @@ class LoginForm extends Form {
 
   doSubmit = async () => {
     try {
-      await authService.login(this.state.data);
+      await auth.login(this.state.data);
       // this.props.history.push("/");
-      window.location = "/"; //this triggers full refresh as opposed to using the history prop
+      const { state } = this.props.location; //this is sent in from the ProtectedRoute, if the user treid to go somewhere and was redirected here
+
+      window.location = state ? state.from.pathname : "/"; //using window.location triggers full site refresh
     } catch (ex) {
       console.log(ex.response);
       console.log(ex.response.status);
@@ -40,6 +43,7 @@ class LoginForm extends Form {
   };
 
   render() {
+    if (auth.getCurrentUser()) return <Redirect to="/" />;
     return (
       <div>
         <h1>Login</h1>

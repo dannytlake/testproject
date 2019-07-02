@@ -25,3 +25,7 @@ export function registerUser(user) {
   console.log("creating new user");
   return http.post(apiEndpoint, user);
 }
+
+export default {
+  registerUser
+};

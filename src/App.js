@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import jwtDecode from "jwt-decode";
+import auth from "./services/authService";
 
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import NavBar from "./components/NavBar";
 import Vidly from "./components/Vidly";
 import MovieForm from "./components/MovieForm";
@@ -26,9 +27,7 @@ class App extends Component {
 
   componentDidMount() {
     try {
-      const jwt = localStorage.getItem("token");
-      const user = jwtDecode(jwt);
-
+      const user = auth.getCurrentUser();
       this.setState({ user });
     } catch (error) {
       //ignore, anon user
@@ -36,19 +35,24 @@ class App extends Component {
   }
 
   render() {
+    const { user } = this.state;
     return (
       <React.Fragment>
         <ToastContainer />
-        <NavBar user={this.state.user} />
+        <NavBar user={user} />
         <main className="container">
           <div className="content">
             <Switch>
               <Route path="/login" component={LoginForm} />
               <Route path="/logout" component={Logout} />
               <Route path="/register" component={RegisterForm} />
-              <Route path="/movies/:id" component={MovieForm} />
+              <ProtectedRoute path="/movies/:id" component={MovieForm} />
 
-              <Route path="/movies" component={Vidly} />
+              <Route
+                path="/movies"
+                render={props => <Vidly {...props} user={user} />}
+              />
+
               <Route path="/customers" component={Customers} />
               <Route path="/rentals" component={Rentals} />
               <Route path="/not-found" component={NotFound} />

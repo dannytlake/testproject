@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-
+import auth from "../services/authService";
 //import { getMovies } from "../services/fakeMovieService";
 //import { getGenres } from "../services/fakeGenreService";
 import { toast } from "react-toastify";
@@ -44,19 +44,26 @@ class MovieList extends Component {
       content: movie => (
         <Like liked={movie.liked} onClick={() => this.handleLike(movie)} />
       )
-    }, //like column
-    {
-      _id: "6",
-      content: movie => (
-        <button
-          className="btn btn-danger btn-sm m-2"
-          onClick={() => this.handleDelete(movie)}
-        >
-          Delete
-        </button>
-      )
-    } //delete column
+    } //like column
   ];
+
+  deleteColumn = {
+    _id: "6",
+    content: movie => (
+      <button
+        className="btn btn-danger btn-sm m-2"
+        onClick={() => this.handleDelete(movie)}
+      >
+        Delete
+      </button>
+    )
+  };
+
+  constructor() {
+    super();
+    const user = auth.getCurrentUser();
+    if (user && user.isAdmin) this.columns.push(this.deleteColumn);
+  }
 
   async componentDidMount() {
     const { data: dataGenres } = await GenreService.getGenres();
@@ -89,9 +96,8 @@ class MovieList extends Component {
     } catch (ex) {
       if (ex.response && ex.response.status === 404) {
         toast.error("This movie has already been deleted");
-
-        this.setState({ movies: originalMovies });
       }
+      this.setState({ movies: originalMovies });
     }
   };
 
@@ -171,7 +177,9 @@ class MovieList extends Component {
       sortOrder
     } = this.state;
 
-    if (movieCount === 0) return "There are no movies";
+    const { user } = this.props;
+
+    //if (movieCount === 0) return "There are no movies";
 
     const { totalCount, movies } = this.getPaginatedData();
 
@@ -186,14 +194,15 @@ class MovieList extends Component {
             />
           </div>
           <div className="col">
-            <Link
-              className="btn btn-primary"
-              to="/movies/new"
-              style={{ marginBottom: 20 }}
-            >
-              New Movie
-            </Link>
-
+            {user && (
+              <Link
+                className="btn btn-primary"
+                to="/movies/new"
+                style={{ marginBottom: 20 }}
+              >
+                New Movie
+              </Link>
+            )}
             <p>Showing {totalCount} movies in the database.</p>
             <Search
               onChange={this.handleSearch}
