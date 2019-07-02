@@ -16,19 +16,9 @@ import "font-awesome/css/font-awesome.css";
 import _ from "lodash";
 import { paginate } from "../utils/paginate";
 
-class MovieList extends Component {
-  state = {
-    movies: [],
-    movieCount: 0,
-    pageNum: 1,
-    pageSize: 4,
-    activeGenre: { _id: "all", name: "All Genres" },
-    genres: [],
-    sortColumn: "title",
-    sortOrder: "asc",
-    searchString: ""
-  };
-  //hh
+class LashPage extends Component {
+  state = {};
+
   columns = [
     {
       path: "title",
@@ -36,6 +26,7 @@ class MovieList extends Component {
       _id: "1",
       content: movie => <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
     },
+
     { path: "genre.name", label: "Genre", _id: "2" },
     { path: "numberInStock", label: "Stock", _id: "3" },
     { path: "dailyRentalRate", label: "Rate", _id: "4" },
@@ -168,6 +159,7 @@ class MovieList extends Component {
 
   render() {
     const {
+      movieCount,
       activeGenre,
       genres,
       pageNum,
@@ -178,7 +170,7 @@ class MovieList extends Component {
 
     const { user } = this.props;
 
-    //if (movieCount === 0) return "There are no movies";
+    if (movieCount === 0) return "There are no movies";
 
     const { totalCount, movies } = this.getPaginatedData();
 
@@ -230,4 +222,4 @@ class MovieList extends Component {
   }
 }
 
-export default MovieList;
+export default LashPage;
