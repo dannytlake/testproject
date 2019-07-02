@@ -12,10 +12,8 @@ import logger from "./services/logService";
 logger.init();
 
 console.log("SUPERMAN", process.env.REACT_APP_NAME);
-<<<<<<< HEAD
+
 console.log(process.env);
-=======
->>>>>>> 7fa6038334bbfaf62399d5301445923a3799bc1d
 
 ReactDOM.render(
   <BrowserRouter>
